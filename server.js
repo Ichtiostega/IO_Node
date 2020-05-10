@@ -6,10 +6,16 @@ config = {
     user: 'server928985_debater', // default process.env.PGUSER || process.env.USER
     password: 'AleksanderNieTakiWielki99%', //default process.env.PGPASSWORD
     database: 'server928985_debater', // default process.env.PGDATABASE || process.env.USER
-    port: 5432 // default process.env.PGPORT
+    port: 5432, // default process.env.PGPORT
+    query_timeout: 5000
   }
 
 const client = new Client(config);
+client.on('error', err => {
+    console.error('Cached an error from the database client: ', err.stack)
+    client.end();
+    client.connect();
+  })
 client.connect();
 
 const app = express();
