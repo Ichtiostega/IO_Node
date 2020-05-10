@@ -43,7 +43,7 @@ app.get('/debug/database', (req, res) => {
 });
 
 app.get('/debug/tables', (req, res) => {
-    data = '';
+    data = [];
     client.query({text: 'SELECT * FROM pg_catalog.pg_tables'}, (err, qres) => {
         if (err) {
             console.log(err.stack)
@@ -51,7 +51,7 @@ app.get('/debug/tables', (req, res) => {
         else {
             qres.rows.forEach(row => {
                 console.log({table: row.tablename, schema: row.schemaname});
-                data += 'Table: ' + row.tablename + ' Schema: ' + row.schemaname + '\n';
+                data.push({table: row.tablename, schema: row.schemaname})
             });
             res.send(data);
         }
