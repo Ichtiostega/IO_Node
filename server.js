@@ -10,6 +10,8 @@ config = {
   }
 
 const client = new Client(config);
+client.connect();
+
 const app = express();
 app.use(express.json())
 const node_port = 2137;
@@ -21,15 +23,14 @@ tournament_record = {start_date: '2022-03-03T23:00:00.000Z', name: 'Nazwa debugo
 phase_record = {name: 'Faza2', structure: 'NULL'}
 debate_record = {d_time: '23:00:00.000', d_date: '2022-03-03', location: 'pod cerkwia', team_1: 'NULL', team_2: 'NULL'}
 
-app.get('/debug/test', (req, res) => {
+app.get('/debug/database', (req, res) => {
     data = '';
-    client.query({text: "SELECT 'Database connection correct.' AS message"}, (err, qres) => {
+    client.query({text: "SELECT 'Database connection correct!' AS message"}, (err, qres) => {
         if (err) {
             console.log(err.stack)
         } 
         else {
-            console.log('###########RECEIVED FROM PG###################')
-            console.log(qres)
+            console.log(qres.rows)
             res.send(qres.rows)
         }
     });
@@ -42,12 +43,24 @@ app.get('/debug/tables', (req, res) => {
             console.log(err.stack)
         } 
         else {
-            console.log('###########RECEIVED FROM PG###################')
             qres.rows.forEach(row => {
                 console.log({table: row.tablename, schema: row.schemaname});
                 data += 'Table: ' + row.tablename + ' Schema: ' + row.schemaname + '\n';
             });
             res.send(data);
+        }
+    });
+});
+
+app.get('/debug/phase', (req, res) => {
+    data = '';
+    client.query(P_list, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows);
         }
     });
 });
@@ -59,11 +72,15 @@ app.get('/debug/debate', (req, res) => {
             console.log(err.stack)
         } 
         else {
-            console.log('###########RECEIVED FROM PG###################')
-            console.log(qres)
+            console.log(qres.rows)
             res.send(qres.rows);
         }
     });
+});
+
+app.get('/debug/node', (req, res) => {
+    res.send('Node server is working!');
+    console.log('Sent response');
 });
 
 /////////////////////       Database Queries        //////////////////////////
@@ -77,6 +94,12 @@ T_list = {
 D_list = {
     name:   'debate_list',
     text:   'SELECT * FROM "Debate"',
+    values: []
+}
+
+P_list = {
+    name:   'phase_list',
+    text:   'SELECT * FROM "Tournament_phase"',
     values: []
 }
 
@@ -109,13 +132,6 @@ D_insert = {
     text:   'INSERT INTO "Debate"(tournament_id, phase_id, d_time, d_date, location, team_1, team_2) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: []
 }
-
-client.connect();
-
-app.get('/', (req, res) => {
-    res.send('Response to base request');
-    console.log('Sent response');
-});
 
 //////////////////////////////      Posts       /////////////////////////////////
 
