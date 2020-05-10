@@ -1,5 +1,5 @@
 const express = require('express');
-const pg = require('pq');
+const pg = require('pg');
 const client = pg();
 const app = express();
 app.use(express.json())
