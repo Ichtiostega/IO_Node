@@ -24,4 +24,4 @@ Endpoint | Function
 /debug/database | Checks the servers connection to the database
 /debug/tables | Lists all database tables
 /debug/phase | Lists ALL phases
-/debug/databases | Lists ALL databases
+/debug/debate | Lists ALL debates
