@@ -18,17 +18,19 @@ app.listen(node_port, () => console.log(`Listening on port ${node_port}`));
 /////////////////////       Debug Section           //////////////////////////
 
 tournament_record = {start_date: '2022-03-03T23:00:00.000Z', name: 'Nazwa debugowej debaty', city: 'Moskwa', location: 'Plac czerwony'}
+phase_record = {name: 'Faza2', structure: 'NULL'}
+debate_record = {d_time: '23:00:00.000', d_date: '2022-03-03', location: 'pod cerkwia', team_1: 'NULL', team_2: 'NULL'}
 
 app.get('/debug/test', (req, res) => {
     data = '';
-    client.query({text: "SELECT 'testing' AS message"}, (err, qres) => {
+    client.query({text: "SELECT 'Database connection correct.' AS message"}, (err, qres) => {
         if (err) {
             console.log(err.stack)
         } 
         else {
             console.log('###########RECEIVED FROM PG###################')
             console.log(qres)
-            res.send(qres)
+            res.send(qres.rows)
         }
     });
 });
@@ -50,11 +52,26 @@ app.get('/debug/tables', (req, res) => {
     });
 });
 
+app.get('/debug/debate', (req, res) => {
+    data = '';
+    client.query(D_list, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+        } 
+        else {
+            console.log('###########RECEIVED FROM PG###################')
+            console.log(qres)
+            res.send(qres.rows);
+        }
+    });
+});
+
 /////////////////////       Database Queries        //////////////////////////
 
 T_list = {
     name:   'tournament_list',
-    text:   'SELECT * FROM "Tournament"'
+    text:   'SELECT * FROM "Tournament"',
+    values: []
 }
 
 D_list = {
@@ -65,7 +82,13 @@ D_list = {
 
 D_list_phase = {
     name:   'debate_list_by_phase',
-    text:   'SELECT * FROM "Debate" WHERE "Debate".phase_id = $1',
+    text:   'SELECT * FROM "Debate" WHERE "Debate".tournament_id = $1 AND "Debate".phase_id = $2',
+    values: []
+}
+
+P_list_tournament = {
+    name:   'phase_list_by_debate',
+    text:   'SELECT * FROM "Tournament_phase" WHERE "Tournament_phase".tournament_id = $1',
     values: []
 }
 
@@ -83,7 +106,7 @@ PH_insert = {
 
 D_insert = {
     name:   'insert_debate',
-    text:   'INSERT INTO Debate(tournament_id, phase_id, time, location, team_1, team_2) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+    text:   'INSERT INTO "Debate"(tournament_id, phase_id, d_time, d_date, location, team_1, team_2) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     values: []
 }
 
@@ -106,7 +129,7 @@ app.post('/api/tournament', (req, res) => {
         } 
         else {
             console.log(qres.rows)
-            res.send(qres.rows)
+            res.send(qres.rows[0])
         }
     });
 });
@@ -116,12 +139,13 @@ app.post('/api/tournament/:tid/phase', (req, res) => {
     p = req.params;
     phi = JSON.parse(JSON.stringify(PH_insert));
     phi.values.push(p.tid, b.name, b.structure);
-    client.query(phi, (err, res) => {
+    client.query(phi, (err, qres) => {
         if (err) {
             console.log(err.stack)
         } 
         else {
-            console.log(res.rows[0])
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
         }
     });
 });
@@ -130,13 +154,14 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     b = req.body;
     p = req.params;
     di = JSON.parse(JSON.stringify(D_insert));
-    di.values.push(p.tid, p.pid, b.time, b.location, b.team_1, b.team_2);
-    client.query(di, (err, res) => {
+    di.values.push(p.tid, p.pid, b.d_time, b.d_date, b.location, b.team_1, b.team_2);
+    client.query(di, (err, qres) => {
         if (err) {
             console.log(err.stack)
         } 
         else {
-            console.log(res.rows[0])
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
         }
     });
 });
@@ -157,16 +182,32 @@ app.get('/api/tournament', (req, res) => {
     });
 });
 
-app.get('/api/debate', (req, res) => {
-    data = '';
-    client.query(D_list, (err, qres) => {
+app.get('/api/tournament/:tid/phase', (req, res) => {
+    p = req.params;
+    ptl = JSON.parse(JSON.stringify(P_list_tournament));
+    ptl.values.push(p.tid);
+    client.query(ptl, (err, qres) => {
         if (err) {
             console.log(err.stack)
         } 
         else {
-            console.log('###########RECEIVED FROM PG###################')
-            console.log(qres)
-            res.send(qres.rows);
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
+    p = req.params;
+    dpl = JSON.parse(JSON.stringify(D_list_phase));
+    dpl.values.push(p.tid, p.pid);
+    client.query(dpl, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
         }
     });
 });
