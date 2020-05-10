@@ -34,6 +34,8 @@ app.get('/debug/database', (req, res) => {
     client.query({text: "SELECT 'Database connection correct!' AS message"}, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
@@ -47,6 +49,8 @@ app.get('/debug/tables', (req, res) => {
     client.query({text: 'SELECT * FROM pg_catalog.pg_tables'}, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             qres.rows.forEach(row => {
@@ -63,6 +67,8 @@ app.get('/debug/phase', (req, res) => {
     client.query(P_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
@@ -76,6 +82,8 @@ app.get('/debug/debate', (req, res) => {
     client.query(D_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
@@ -148,6 +156,8 @@ app.post('/api/tournament', (req, res) => {
     client.query(ti, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
@@ -164,6 +174,8 @@ app.post('/api/tournament/:tid/phase', (req, res) => {
     client.query(phi, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows[0])
@@ -180,6 +192,8 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     client.query(di, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows[0])
@@ -195,10 +209,11 @@ app.get('/api/tournament', (req, res) => {
     client.query(T_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
-            console.log('###########RECEIVED FROM PG###################')
-            console.log(qres)
+            console.log(qres.rows)
             res.send(qres.rows);
         }
     });
@@ -211,6 +226,8 @@ app.get('/api/tournament/:tid/phase', (req, res) => {
     client.query(ptl, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
@@ -226,6 +243,8 @@ app.get('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     client.query(dpl, (err, qres) => {
         if (err) {
             console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
         } 
         else {
             console.log(qres.rows)
