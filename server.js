@@ -147,6 +147,24 @@ D_insert = {
     values: []
 }
 
+T_delete = {
+    name:   'insert_tournament',
+    text:   'DELETE FROM "Tournament" WHERE "Tournament".id = $1',
+    values: []
+}
+
+PH_delete = {
+    name:   'insert_phase',
+    text:   'DELETE FROM "Tournament_phase" ph WHERE ph.tournament_id = $1 AND ph.id = $2',
+    values: []
+}
+
+D_delete = {
+    name:   'insert_debate',
+    text:   'DELETE FROM "Debate" d WHERE d.tournament_id = $1 AND d.phase_id = $2 AND d.id = $3',
+    values: []
+}
+
 //////////////////////////////      Posts       /////////////////////////////////
 
 app.post('/api/tournament', (req, res) => {
@@ -198,6 +216,59 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
         else {
             console.log(qres.rows[0])
             res.send(qres.rows[0])
+        }
+    });
+});
+
+//////////////////////////////      Deletes     ////////////////////////////////////
+
+app.delete('/api/tournament/:tid', (req, res) => {
+    p = req.params;
+    td = JSON.parse(JSON.stringify(T_delete));
+    td.values.push(p.tid);
+    client.query(td, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send({Message: 'Success'})
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/phase/:pid', (req, res) => {
+    p = req.params;
+    pd = JSON.parse(JSON.stringify(PH_delete));
+    pd.values.push(p.tid, p.pid);
+    client.query(pd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send({Message: 'Success'})
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
+    p = req.params;
+    dd = JSON.parse(JSON.stringify(D_delete));
+    dd.values.push(p.tid, p.pid, p.did);
+    client.query(dd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send({Message: 'Success'})
         }
     });
 });
