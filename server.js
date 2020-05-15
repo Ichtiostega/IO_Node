@@ -170,7 +170,7 @@ D_delete = {
 app.post('/api/tournament', (req, res) => {
     b = req.body;
     ti = JSON.parse(JSON.stringify(T_insert));
-    ti.values.push(b.start_date, b.name, b.city, b.location);
+    ti.values = [b.start_date, b.name, b.city, b.location];
     client.query(ti, (err, qres) => {
         if (err) {
             console.log(err.stack)
@@ -188,7 +188,7 @@ app.post('/api/tournament/:tid/phase', (req, res) => {
     b = req.body;
     p = req.params;
     phi = JSON.parse(JSON.stringify(PH_insert));
-    phi.values.push(p.tid, b.name, b.structure);
+    phi.values = [p.tid, b.name, b.structure];
     client.query(phi, (err, qres) => {
         if (err) {
             console.log(err.stack)
@@ -206,7 +206,7 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     b = req.body;
     p = req.params;
     di = JSON.parse(JSON.stringify(D_insert));
-    di.values.push(p.tid, p.pid, b.d_time, b.d_date, b.location, b.team_1, b.team_2);
+    di.values = [p.tid, p.pid, b.d_time, b.d_date, b.location, b.team_1, b.team_2];
     client.query(di, (err, qres) => {
         if (err) {
             console.log(err.stack)
