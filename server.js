@@ -148,19 +148,19 @@ D_insert = {
 }
 
 T_delete = {
-    name:   'insert_tournament',
+    name:   'delete_tournament',
     text:   'DELETE FROM "Tournament" WHERE "Tournament".id = $1',
     values: []
 }
 
 PH_delete = {
-    name:   'insert_phase',
+    name:   'delete_phase',
     text:   'DELETE FROM "Tournament_phase" ph WHERE ph.tournament_id = $1 AND ph.id = $2',
     values: []
 }
 
 D_delete = {
-    name:   'insert_debate',
+    name:   'delete_debate',
     text:   'DELETE FROM "Debate" d WHERE d.tournament_id = $1 AND d.phase_id = $2 AND d.id = $3',
     values: []
 }
