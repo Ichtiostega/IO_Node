@@ -1,5 +1,5 @@
 const express = require('express');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
 config = {
     host: 'sql.server928985.nazwa.pl',
@@ -10,13 +10,13 @@ config = {
     query_timeout: 5000
   }
 
-const client = new Client(config);
-client.on('error', err => {
-    console.error('Cached an error from the database client: ', err.stack)
-    client.end();
-    client.connect();
-  })
-client.connect();
+const pool = new Pool(config);
+// pool.on('error', err => {
+//     console.error('Cached an error from the database pool: ', err.stack)
+//     pool.end();
+//     pool.connect();
+//   })
+// pool.connect();
 
 const app = express();
 app.use(express.json())
@@ -31,7 +31,7 @@ debate_record = {d_time: '23:00:00.000', d_date: '2022-03-03', location: 'pod ce
 
 app.get('/debug/database', (req, res) => {
     data = '';
-    client.query({text: "SELECT 'Database connection correct!' AS message"}, (err, qres) => {
+    pool.query({text: "SELECT 'Database connection correct!' AS message"}, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -46,7 +46,7 @@ app.get('/debug/database', (req, res) => {
 
 app.get('/debug/tables', (req, res) => {
     data = [];
-    client.query({text: 'SELECT * FROM pg_catalog.pg_tables'}, (err, qres) => {
+    pool.query({text: 'SELECT * FROM pg_catalog.pg_tables'}, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -64,7 +64,7 @@ app.get('/debug/tables', (req, res) => {
 
 app.get('/debug/phase', (req, res) => {
     data = '';
-    client.query(P_list, (err, qres) => {
+    pool.query(P_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -79,7 +79,7 @@ app.get('/debug/phase', (req, res) => {
 
 app.get('/debug/debate', (req, res) => {
     data = '';
-    client.query(D_list, (err, qres) => {
+    pool.query(D_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -171,7 +171,7 @@ app.post('/api/tournament', (req, res) => {
     b = req.body;
     ti = JSON.parse(JSON.stringify(T_insert));
     ti.values = [b.start_date, b.name, b.city, b.location];
-    client.query(ti, (err, qres) => {
+    pool.query(ti, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -189,7 +189,7 @@ app.post('/api/tournament/:tid/phase', (req, res) => {
     p = req.params;
     phi = JSON.parse(JSON.stringify(PH_insert));
     phi.values = [p.tid, b.name, b.structure];
-    client.query(phi, (err, qres) => {
+    pool.query(phi, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -207,7 +207,7 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     p = req.params;
     di = JSON.parse(JSON.stringify(D_insert));
     di.values = [p.tid, p.pid, b.d_time, b.d_date, b.location, b.team_1, b.team_2];
-    client.query(di, (err, qres) => {
+    pool.query(di, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -226,7 +226,7 @@ app.delete('/api/tournament/:tid', (req, res) => {
     p = req.params;
     td = JSON.parse(JSON.stringify(T_delete));
     td.values.push(p.tid);
-    client.query(td, (err, qres) => {
+    pool.query(td, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -243,7 +243,7 @@ app.delete('/api/tournament/:tid/phase/:pid', (req, res) => {
     p = req.params;
     pd = JSON.parse(JSON.stringify(PH_delete));
     pd.values.push(p.tid, p.pid);
-    client.query(pd, (err, qres) => {
+    pool.query(pd, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -260,7 +260,7 @@ app.delete('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
     p = req.params;
     dd = JSON.parse(JSON.stringify(D_delete));
     dd.values.push(p.tid, p.pid, p.did);
-    client.query(dd, (err, qres) => {
+    pool.query(dd, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -277,7 +277,7 @@ app.delete('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
 
 app.get('/api/tournament', (req, res) => {
     data = '';
-    client.query(T_list, (err, qres) => {
+    pool.query(T_list, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -294,7 +294,7 @@ app.get('/api/tournament/:tid/phase', (req, res) => {
     p = req.params;
     ptl = JSON.parse(JSON.stringify(P_list_tournament));
     ptl.values.push(p.tid);
-    client.query(ptl, (err, qres) => {
+    pool.query(ptl, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
@@ -311,7 +311,7 @@ app.get('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     p = req.params;
     dpl = JSON.parse(JSON.stringify(D_list_phase));
     dpl.values.push(p.tid, p.pid);
-    client.query(dpl, (err, qres) => {
+    pool.query(dpl, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
