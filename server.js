@@ -1,3 +1,5 @@
+//  http://77.55.192.26:2137/
+
 const express = require('express');
 const { Pool } = require('pg');
 
@@ -11,12 +13,6 @@ config = {
   }
 
 const pool = new Pool(config);
-// pool.on('error', err => {
-//     console.error('Cached an error from the database pool: ', err.stack)
-//     pool.end();
-//     pool.connect();
-//   })
-// pool.connect();
 
 const app = express();
 app.use(express.json())
@@ -147,6 +143,54 @@ D_insert = {
     values: []
 }
 
+U_insert = {
+    name:   'insert_user',
+    text:   'INSERT INTO "User"(actual_login, name, surname, email) VALUES ($1, $2, $3, $4) RETURNING id',
+    values: []
+}
+
+A_insert = {
+    name:   'insert_admin',
+    text:   'INSERT INTO "Admin"(user_id) VALUES ($1)',
+    values: []
+}
+
+TE_insert = {
+    name:   'insert_team',
+    text:   'INSERT INTO "Team"(tournament_id, name, speaker_1, speaker_2, speaker_3, speaker_4) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+    values: []
+}
+
+TJ_insert = {
+    name:   'insert_tournament_jury',
+    text:   'INSERT INTO "Tournament_jury"(tournament_id, user_id) VALUES ($1, $2)',
+    values: []
+}
+
+DJ_insert = {
+    name:   'insert_debate_juror',
+    text:   'INSERT INTO "Debate_juror"(jury_id, debate_id, evaluation, juror_feedback) VALUES ($1, $2, $3, $4)',
+    values: []
+}
+
+TA_insert = {
+    name:   'insert_tournament_admin',
+    text:   'INSERT INTO "Tournament_admin"(tournament_id, user_id) VALUES ($1, $2)',
+    values: []
+}
+
+TM_insert = {
+    name:   'insert_tournament_marshall',
+    text:   'INSERT INTO "Tournament_marshall"(tournament_id, user_id) VALUES ($1, $2)',
+    values: []
+}
+
+TP_insert = {
+    name:   'insert_tournament_participant',
+    text:   'INSERT INTO "Tournament_participant"(tournament_id, user_id) VALUES ($1, $2)',
+    values: []
+}
+
 T_delete = {
     name:   'delete_tournament',
     text:   'DELETE FROM "Tournament" WHERE "Tournament".id = $1',
@@ -208,6 +252,147 @@ app.post('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     di = JSON.parse(JSON.stringify(D_insert));
     di.values = [p.tid, p.pid, b.d_time, b.d_date, b.location, b.team_1, b.team_2];
     pool.query(di, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/user', (req, res) => {
+    b = req.body;
+    ui = JSON.parse(JSON.stringify(U_insert));
+    ui.values = [b.actual_login, b.name, b.surname, b.email];
+    pool.query(ui, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/admin', (req, res) => {
+    b = req.body;
+    ai = JSON.parse(JSON.stringify(A_insert));
+    ai.values = [b.user_id];
+    pool.query(ai, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/team', (req, res) => {
+    b = req.body;
+    tei = JSON.parse(JSON.stringify(TE_insert));
+    tei.values = [b.tournament_id, b.name, b.speaker_1, b.speaker_2, b.speaker_3, b.speaker_4];
+    pool.query(tei, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/tournament/:tid/jury', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tji = JSON.parse(JSON.stringify(TJ_insert));
+    tji.values = [p.tid, b.user_id];
+    pool.query(tji, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/tournament/:tid/phase/:pid/debate/:did/juror', (req, res) => {
+    b = req.body;
+    p = req.params;
+    dji = JSON.parse(JSON.stringify(DJ_insert));
+    dji.values = [b.jury_id, p.did, b.evaluation, b.juror_feedback];
+    pool.query(dji, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/tournament/:tid/admin', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tai = JSON.parse(JSON.stringify(TA_insert));
+    tai.values = [p.tid, b.user_id];
+    pool.query(tai, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/tournament/:tid/marshall', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tmi = JSON.parse(JSON.stringify(TM_insert));
+    tmi.values = [p.tid, b.user_id];
+    pool.query(tmi, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.post('/api/tournament/:tid/participant', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tpi = JSON.parse(JSON.stringify(TP_insert));
+    tpi.values = [p.tid, b.user_id];
+    pool.query(tpi, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
