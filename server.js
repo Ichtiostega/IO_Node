@@ -209,6 +209,53 @@ D_delete = {
     values: []
 }
 
+U_delete = {
+    name:   'delete_user',
+    text:   'DELETE FROM "User" u WHERE u.id = $1',
+    values: []
+}
+
+A_delete = {
+    name:   'insert_admin',
+    text:   'DELETE FROM "Admin" a WHERE a.user_id = $1',
+    values: []
+}
+
+TE_delete = {
+    name:   'delete_team',
+    text:   'DELETE FROM "Team" t WHERE t.tournament_id = $1 AND t.id = $2',
+    values: []
+}
+
+TJ_delete = {
+    name:   'delete_tournament_jury',
+    text:   'DELETE FROM "Tournament_jury" tj WHERE tj.tournament_id = $1 AND tj.user_id = $2',
+    values: []
+}
+
+DJ_delete = {
+    name:   'delete_debate_juror',
+    text:   'DELETE FROM "Debate_juror" dj WHERE dj.debate_id = $1 AND dj.jury_id = $2',
+    values: []
+}
+
+TA_delete = {
+    name:   'delete_tournament_admin',
+    text:   'DELETE FROM "Tournament_admin" ta WHERE ta.tournament_id = $1 AND ta.user_id = $2',
+    values: []
+}
+
+TM_delete = {
+    name:   'delete_tournament_marshall',
+    text:   'DELETE FROM "Tournament_marshall" tm WHERE tm.tournament_id = $1 AND tm.user_id = $2',
+    values: []
+}
+
+TP_delete = {
+    name:   'delete_tournament_participant',
+    text:   'DELETE FROM "Tournament_participant" tp WHERE tp.tournament_id = $1 AND tp.user_id = $2',
+    values: []
+}
 //////////////////////////////      Posts       /////////////////////////////////
 
 app.post('/api/tournament', (req, res) => {
@@ -454,6 +501,144 @@ app.delete('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
         else {
             console.log(qres.rows)
             res.send({Message: 'Success'})
+        }
+    });
+});
+
+app.delete('/api/user/:uid', (req, res) => {
+    p = req.params;
+    ud = JSON.parse(JSON.stringify(U_delete));
+    ud.values = [p.uid];
+    pool.query(ud, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/admin/:uid', (req, res) => {
+    p = req.params;
+    ad = JSON.parse(JSON.stringify(A_delete));
+    ad.values = [p.uid];
+    pool.query(ad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/team/:teid', (req, res) => {
+    p = req.params;
+    ted = JSON.parse(JSON.stringify(TE_delete));
+    ted.values = [p.tid, p.teid];
+    pool.query(ted, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/jury/:jid', (req, res) => {
+    p = req.params;
+    tjd = JSON.parse(JSON.stringify(TJ_delete));
+    tjd.values = [p.tid, p.jid];
+    pool.query(tjd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/phase/:pid/debate/:did/juror/:jid', (req, res) => {
+    p = req.params;
+    djd = JSON.parse(JSON.stringify(DJ_delete));
+    djd.values = [p.did, p.jid];
+    pool.query(djd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/admin/:aid', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tad = JSON.parse(JSON.stringify(TA_delete));
+    tad.values = [p.tid, p.aid];
+    pool.query(tad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/marshall/:mid', (req, res) => {
+    p = req.params;
+    tmd = JSON.parse(JSON.stringify(TM_delete));
+    tmd.values = [p.tid, p.mid];
+    pool.query(tmd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
+        }
+    });
+});
+
+app.delete('/api/tournament/:tid/participant/:pid', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tpd = JSON.parse(JSON.stringify(TP_delete));
+    tpd.values = [p.tid, p.pid];
+    pool.query(tpd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows[0])
+            res.send(qres.rows[0])
         }
     });
 });
