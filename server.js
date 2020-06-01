@@ -125,6 +125,54 @@ P_list_tournament = {
     values: []
 }
 
+U_list = {
+    name:   'list_users',
+    text:   'SELECT * FROM "User"',
+    values: []
+}
+
+A_list = {
+    name:   'list_admin',
+    text:   'SELECT * FROM "Admin" a JOIN "User" u ON a.user_id = u.id',
+    values: []
+}
+
+TE_list = {
+    name:   'list_team',
+    text:   'SELECT * FROM "Team" tm WHERE tm.tournament_id = $1',
+    values: []
+}
+
+TJ_list = {
+    name:   'list_tournament_jury',
+    text:   'SELECT * FROM "Tournament_jury" tj WHERE tj.tournament_id = $1',
+    values: []
+}
+
+DJ_list = {
+    name:   'list_debate_juror',
+    text:   'SELECT * FROM "Debate_juror" dj WHERE dj.debate_id = $1',
+    values: []
+}
+
+TA_list = {
+    name:   'list_tournament_admin',
+    text:   'SELECT * FROM "Tournament_admin" ta WHERE ta.tournament_id = $1',
+    values: []
+}
+
+TM_list = {
+    name:   'list_tournament_marshall',
+    text:   'SELECT * FROM "Tournament_marshall" tm WHERE tm.tournament_id = $1',
+    values: []
+}
+
+TP_list = {
+    name:   'list_tournament_participant',
+    text:   'SELECT * FROM "Tournament_participant" tp WHERE tp.tournament_id = $1',
+    values: []
+}
+
 T_insert = {
     name:   'insert_tournament',
     text:   'INSERT INTO "Tournament"(start_date, name, city, location) VALUES ($1, $2, $3, $4) RETURNING id',
@@ -150,7 +198,7 @@ U_insert = {
 }
 
 A_insert = {
-    name:   'insert_admin',
+    name:   'delete_admin',
     text:   'INSERT INTO "Admin"(user_id) VALUES ($1)',
     values: []
 }
@@ -682,6 +730,142 @@ app.get('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
     dpl = JSON.parse(JSON.stringify(D_list_phase));
     dpl.values.push(p.tid, p.pid);
     pool.query(dpl, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/user', (req, res) => {
+    p = req.params;
+    ud = JSON.parse(JSON.stringify(U_list));
+    pool.query(ud, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/admin', (req, res) => {
+    p = req.params;
+    ad = JSON.parse(JSON.stringify(A_list));
+    pool.query(ad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/team', (req, res) => {
+    p = req.params;
+    ted = JSON.parse(JSON.stringify(TE_list));
+    ted.values = [p.tid];
+    pool.query(ted, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/jury', (req, res) => {
+    p = req.params;
+    tjd = JSON.parse(JSON.stringify(TJ_list));
+    tjd.values = [p.tid];
+    pool.query(tjd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/phase/:pid/debate/:did/juror', (req, res) => {
+    p = req.params;
+    djd = JSON.parse(JSON.stringify(DJ_list));
+    djd.values = [p.did];
+    pool.query(djd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/admin', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tad = JSON.parse(JSON.stringify(TA_list));
+    tad.values = [p.tid];
+    pool.query(tad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/marshall', (req, res) => {
+    p = req.params;
+    tmd = JSON.parse(JSON.stringify(TM_list));
+    tmd.values = [p.tid];
+    pool.query(tmd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/participant', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tpd = JSON.parse(JSON.stringify(TP_list));
+    tpd.values = [p.tid];
+    pool.query(tpd, (err, qres) => {
         if (err) {
             console.log(err.stack)
             res.status(500)
