@@ -1,6 +1,7 @@
 //  http://77.55.192.26:2137/
 
 const express = require('express');
+const cors = require('cors');
 const { Pool } = require('pg');
 
 config = {
@@ -15,7 +16,8 @@ config = {
 const pool = new Pool(config);
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 const node_port = 2137;
 app.listen(node_port, () => console.log(`Listening on port ${node_port}`));
 
@@ -170,6 +172,84 @@ TM_list = {
 TP_list = {
     name:   'list_tournament_participant',
     text:   'SELECT * FROM "Tournament_participant" tp WHERE tp.tournament_id = $1',
+    values: []
+}
+
+T_get = {
+    name:   'tournament_get',
+    text:   'SELECT * FROM "Tournament" WHERE id = $1',
+    values: []
+}
+
+D_get = {
+    name:   'debate_get',
+    text:   'SELECT * FROM "Debate" WHERE id = $1',
+    values: []
+}
+
+P_get = {
+    name:   'phase_get',
+    text:   'SELECT * FROM "Tournament_phase" WHERE id = $1',
+    values: []
+}
+
+D_get_phase = {
+    name:   'debate_get_by_phase',
+    text:   'SELECT * FROM "Debate" WHERE "Debate".tournament_id = $1 AND "Debate".phase_id = $2 AND id = $3',
+    values: []
+}
+
+P_get_tournament = {
+    name:   'phase_get_by_debate',
+    text:   'SELECT * FROM "Tournament_phase" WHERE "Tournament_phase".tournament_id = $1 AND id = $2',
+    values: []
+}
+
+U_get = {
+    name:   'get_users',
+    text:   'SELECT * FROM "User" WHERE id = $1',
+    values: []
+}
+
+A_get = {
+    name:   'get_admin',
+    text:   'SELECT * FROM "Admin" a JOIN "User" u ON a.user_id = u.id WHERE id = $1',
+    values: []
+}
+
+TE_get = {
+    name:   'get_team',
+    text:   'SELECT * FROM "Team" tm WHERE tm.tournament_id = $1 AND id = $2',
+    values: []
+}
+
+TJ_get = {
+    name:   'get_tournament_jury',
+    text:   'SELECT * FROM "Tournament_jury" tj WHERE tj.tournament_id = $1 AND id = $2',
+    values: []
+}
+
+DJ_get = {
+    name:   'get_debate_juror',
+    text:   'SELECT * FROM "Debate_juror" dj WHERE dj.debate_id = $1 AND id = $2',
+    values: []
+}
+
+TA_get = {
+    name:   'get_tournament_admin',
+    text:   'SELECT * FROM "Tournament_admin" ta WHERE ta.tournament_id = $1 AND id = $2',
+    values: []
+}
+
+TM_get = {
+    name:   'get_tournament_marshall',
+    text:   'SELECT * FROM "Tournament_marshall" tm WHERE tm.tournament_id = $1 AND id = $2',
+    values: []
+}
+
+TP_get = {
+    name:   'get_tournament_participant',
+    text:   'SELECT * FROM "Tournament_participant" tp WHERE tp.tournament_id = $1 AND id = $2',
     values: []
 }
 
@@ -865,6 +945,197 @@ app.get('/api/tournament/:tid/participant', (req, res) => {
     p = req.params;
     tpd = JSON.parse(JSON.stringify(TP_list));
     tpd.values = [p.tid];
+    pool.query(tpd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+///////////////////////////////////     Gets(singular)      /////////////////////////////////////
+
+app.get('/api/tournament/:tid', (req, res) => {
+    p = req.params;
+    tg = JSON.parse(JSON.stringify(T_get));
+    tg.values.push(p.tid);
+    pool.query(tg, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows);
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/phase/:pid', (req, res) => {
+    p = req.params;
+    ptl = JSON.parse(JSON.stringify(P_get_tournament));
+    ptl.values.push(p.tid, p.pid);
+    pool.query(ptl, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
+    p = req.params;
+    dpl = JSON.parse(JSON.stringify(D_get_phase));
+    dpl.values.push(p.tid, p.pid, p.did);
+    pool.query(dpl, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/user/:uid', (req, res) => {
+    p = req.params;
+    ud = JSON.parse(JSON.stringify(U_get));
+    ud.values.push(p.uid);
+    pool.query(ud, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/admin/:aid', (req, res) => {
+    p = req.params;
+    ad = JSON.parse(JSON.stringify(A_get));
+    ad.values.push(p.aid);
+    pool.query(ad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/team/:teid', (req, res) => {
+    p = req.params;
+    ted = JSON.parse(JSON.stringify(TE_get));
+    ted.values = [p.tid, p.teid];
+    pool.query(ted, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/jury/:jid', (req, res) => {
+    p = req.params;
+    tjd = JSON.parse(JSON.stringify(TJ_get));
+    tjd.values = [p.tid, p.jid];
+    pool.query(tjd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/phase/:pid/debate/:did/juror/:jid', (req, res) => {
+    p = req.params;
+    djd = JSON.parse(JSON.stringify(DJ_get));
+    djd.values = [p.did, p.jid];
+    pool.query(djd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/admin/:aid', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tad = JSON.parse(JSON.stringify(TA_get));
+    tad.values = [p.tid, p.aid];
+    pool.query(tad, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/marshall/:mid', (req, res) => {
+    p = req.params;
+    tmd = JSON.parse(JSON.stringify(TM_get));
+    tmd.values = [p.tid, p.mid];
+    pool.query(tmd, (err, qres) => {
+        if (err) {
+            console.log(err.stack)
+            res.status(500)
+            res.send(err.stack)
+        } 
+        else {
+            console.log(qres.rows)
+            res.send(qres.rows)
+        }
+    });
+});
+
+app.get('/api/tournament/:tid/participant/:pid', (req, res) => {
+    b = req.body;
+    p = req.params;
+    tpd = JSON.parse(JSON.stringify(TP_get));
+    tpd.values = [p.tid, p.pid];
     pool.query(tpd, (err, qres) => {
         if (err) {
             console.log(err.stack)
