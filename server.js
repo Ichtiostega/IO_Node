@@ -186,7 +186,7 @@ TA_list = {
 
 TM_list = {
     name:   'list_tournament_marshall',
-    text:   'SELECT * FROM "Tournament_marshall" tm WHERE tm.tournament_id = $1',
+    text:   'SELECT u.id, u.name, u.surname FROM "Tournament_marshall" tm JOIN "User" u ON tm.user_id = u.id WHERE tm.tournament_id = $1',
     values: []
 }
 
@@ -882,20 +882,32 @@ app.get('/api/admin', (req, res) => {
 
 app.get('/api/tournament/:tid/team', (req, res) => {
     p = req.params;
-    ted = JSON.parse(JSON.stringify(TE_list));
-    ted.values = [p.tid];
-    pool.query(ted, (err, qres) => {
-        if (err) {
-            console.log(err.stack)
-            res.status(500)
-            res.send(err.stack)
-        } 
-        else {
-            res.status(200)
-            console.log(qres.rows)
-            res.send(qres.rows)
+    ;(async () => {
+        out = []
+        ted = JSON.parse(JSON.stringify(TE_list));
+        ted.values = [p.tid];
+        teams = await pool.query(ted)
+        for(var team of teams.rows){
+            data = {"id": team.id, "name": team.name, "participants": []}
+            u = JSON.parse(JSON.stringify(U_get));
+            u.values = [team.speaker_1]
+            user = await pool.query(u)
+            console.log(user)
+            console.log({"id": user.rows[0].id, "name": user.rows[0].name, "surname": user.rows[0].surname})
+            data.participants.push({"id": user.rows[0].id, "name": user.rows[0].name, "surname": user.rows[0].surname})
+            u.values = [team.speaker_2]
+            user = await pool.query(u)
+            data.participants.push({"id": user.rows[0].id, "name": user.rows[0].name, "surname": user.rows[0].surname})
+            u.values = [team.speaker_3]
+            user = await pool.query(u)
+            data.participants.push({"id": user.rows[0].id, "name": user.rows[0].name, "surname": user.rows[0].surname})
+            u.values = [team.speaker_4]
+            user = await pool.query(u)
+            data.participants.push({"id": user.rows[0].id, "name": user.rows[0].name, "surname": user.rows[0].surname})
+            out.push(JSON.parse(JSON.stringify(data)))
         }
-    });
+        res.send(out)
+    })()
 });
 
 app.get('/api/tournament/:tid/jury', (req, res) => {
@@ -1227,3 +1239,4 @@ app.post('/api/login', (req, res) => {
         }
     })()
 });
+
