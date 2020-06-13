@@ -36,6 +36,7 @@ app.get('/debug/database', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -69,6 +70,7 @@ app.get('/debug/phase', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows);
         }
@@ -84,6 +86,7 @@ app.get('/debug/debate', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows);
         }
@@ -96,6 +99,24 @@ app.get('/debug/node', (req, res) => {
 });
 
 /////////////////////       Database Queries        //////////////////////////
+
+Login = {
+    name:   'Login',
+    text:   'SELECT u.id FROM "User" u JOIN "Passwd" p ON p.user_id = u.id WHERE p.hashcode = $1 AND u.actual_login = $2',
+    values: []
+}
+
+IsMarshall = {
+    name:   'IsMarhsall',
+    text:   'SELECT 1 FROM "Tournament_marshall" WHERE user_id = $1',
+    values: []
+}
+
+IsAdmin = {
+    name:   'IsAdmin',
+    text:   'SELECT 1 FROM "Tournament_admin" WHERE user_id = $1',
+    values: []
+}
 
 T_list = {
     name:   'tournament_list',
@@ -147,7 +168,7 @@ TE_list = {
 
 TJ_list = {
     name:   'list_tournament_jury',
-    text:   'SELECT * FROM "Tournament_jury" tj WHERE tj.tournament_id = $1',
+    text:   'SELECT u.id, u.name, u.surname FROM "Tournament_jury" tj JOIN "User" u ON tj.user_id = u.id WHERE tj.tournament_id = $1',
     values: []
 }
 
@@ -782,6 +803,7 @@ app.get('/api/tournament', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows);
         }
@@ -799,6 +821,7 @@ app.get('/api/tournament/:tid/phase', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -816,6 +839,7 @@ app.get('/api/tournament/:tid/phase/:pid/debate', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -832,6 +856,7 @@ app.get('/api/user', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -848,6 +873,7 @@ app.get('/api/admin', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -865,6 +891,7 @@ app.get('/api/tournament/:tid/team', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -882,6 +909,7 @@ app.get('/api/tournament/:tid/jury', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -899,6 +927,7 @@ app.get('/api/tournament/:tid/phase/:pid/debate/:did/juror', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -917,6 +946,7 @@ app.get('/api/tournament/:tid/admin', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -934,6 +964,7 @@ app.get('/api/tournament/:tid/marshall', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -952,6 +983,7 @@ app.get('/api/tournament/:tid/participant', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -971,6 +1003,7 @@ app.get('/api/tournament/:tid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows);
         }
@@ -988,6 +1021,7 @@ app.get('/api/tournament/:tid/phase/:pid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1005,6 +1039,7 @@ app.get('/api/tournament/:tid/phase/:pid/debate/:did', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1022,6 +1057,7 @@ app.get('/api/user/:uid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1039,6 +1075,7 @@ app.get('/api/admin/:aid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1056,6 +1093,7 @@ app.get('/api/tournament/:tid/team/:teid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1073,6 +1111,7 @@ app.get('/api/tournament/:tid/jury/:jid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1090,6 +1129,7 @@ app.get('/api/tournament/:tid/phase/:pid/debate/:did/juror/:jid', (req, res) => 
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1108,6 +1148,7 @@ app.get('/api/tournament/:tid/admin/:aid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1125,6 +1166,7 @@ app.get('/api/tournament/:tid/marshall/:mid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
@@ -1143,8 +1185,45 @@ app.get('/api/tournament/:tid/participant/:pid', (req, res) => {
             res.send(err.stack)
         } 
         else {
+            res.status(200)
             console.log(qres.rows)
             res.send(qres.rows)
         }
     });
+});
+
+//////////////////////////////////      User auth       /////////////////////////////////////
+
+app.post('/api/login', (req, res) => {
+    b = req.body;
+    ;(async () => {
+        l = JSON.parse(JSON.stringify(Login));
+        l.values = [b.password, b.login];
+        _id = await pool.query(l)
+        if(!_id.rowCount)
+        {
+            res.status(401)
+            res.send()
+        }
+        else
+        {
+            id = _id.rows[0].id
+            console.log('user:', id)
+
+            m = JSON.parse(JSON.stringify(IsMarshall));
+            m.values = [id];
+            _mar = await pool.query(m)
+
+            a = JSON.parse(JSON.stringify(IsAdmin));
+            a.values = [id];
+            _ad = await pool.query(a)
+
+            if(_ad.rowCount)
+                res.send([{"id": id, "type": "admin"}])
+            else if(_mar.rowCount)
+                res.send([{"id": id, "type": "marshall"}])
+            else
+                res.send([{"id": id, "type": "user"}])
+        }
+    })()
 });
