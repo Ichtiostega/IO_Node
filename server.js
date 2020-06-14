@@ -340,6 +340,12 @@ TP_insert = {
     values: []
 }
 
+PWD_insert = {
+    name:   'password_insert',
+    text:   'INSERT INTO "Passwd"(user_id, hashcode) VALUES ($1, $2)',
+    values: []
+}
+
 T_delete = {
     name:   'delete_tournament',
     text:   'DELETE FROM "Tournament" WHERE "Tournament".id = $1',
@@ -1240,3 +1246,21 @@ app.post('/api/login', (req, res) => {
     })()
 });
 
+app.post('/api/register', (req, res) => {
+    b = req.body;
+    ;(async () => {
+        ui = JSON.parse(JSON.stringify(U_insert));
+        ui.values = [b.login, b.name, b.surname, b.email];
+        user = await pool.query(ui)
+        console.log(user)
+        pi = JSON.parse(JSON.stringify(PWD_insert));
+        pi.values = [user.rows[0].id, b.password];
+        await pool.query(pi)
+        res.status(200)
+        res.send(user.rows[0])
+    })().catch(err => {
+        console.log(err.stack)
+        res.status(500)
+        res.send(err.stack)
+    })
+});
